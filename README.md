@@ -62,7 +62,7 @@ This dataset is structured to support churn prediction by providing both behavio
 | churn | Indicates whether the customer discontinued the service (target variable) | Binary |
 
 ## DATA CLEANING & PREPROCESSING
-**1.	Standardized Column Names**
+**1. Standardized Column Names**
 
 Standardized column names by removing spaces, converting to lowercase, and replacing spaces with underscores for consistency. This ensures uniform formatting, making the dataset easier to work with and reducing errors during analysis and modelling.
 
@@ -77,7 +77,7 @@ df.columns = (
 df.columns
 ```
 
-**2.	Columns Check**
+**2. Columns Check**
 
 Checked for missing values across all columns to assess data quality. Identified missing entries in total_charges and satisfaction_score, which require handling before modelling.
 
@@ -102,7 +102,7 @@ df.isna().sum()
 | num_support_tickets | 0 |
 | churn | 0 |
 
-**3.	Fix total_charges**
+**3. Fix total_charges**
 
 Cleaned and validated the total_charges column by handling blanks, converting to numeric, and treating negative values as missing based on business logic. Missing values were then imputed using the median to account for the skewed distribution and preserve data integrity.
 
@@ -174,5 +174,97 @@ df.isna().sum()
 #Handle missing values
 df['total_charges'].hist()
 ```
+![](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System/blob/main/Total%20Charge%20Distribution.png)
 
-![]()
+```PYTHON
+#Because the distribution above is skewed, I used median to replace the missing values
+df['total_charges'].fillna(df['total_charges'].median(), inplace=True)
+```
+
+**4. Handled Missing satisfaction_score**
+
+Handled missing values in satisfaction_score by imputing with the median, as it is an ordinal feature (1–5 scale). This ensures consistency while preserving the inherent ranking structure of the data.
+
+```PYTHON
+#Checking the distribution on satisfaction score
+df['satisfaction_score'].hist()
+```
+![](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System/blob/main/Distribution%20of%20Satisfaction%20Score.png)
+
+```PYTHON
+#Since it's ordinal (1–5):
+#I Imputed with median
+df['satisfaction_score'].fillna(df['satisfaction_score'].median(), inplace=True)
+```
+
+```PYTHON
+#Checked missing values afters fixing them
+df.isna().sum()
+```
+
+| Column | Missing Values |
+|---|---:|
+| customer_id | 0 |
+| tenure_months | 0 |
+| monthly_charges | 0 |
+| total_charges | 0 |
+| contract_type | 0 |
+| internet_service | 0 |
+| tech_support | 0 |
+| streaming_service | 0 |
+| payment_method | 0 |
+| paperless_billing | 0 |
+| satisfaction_score | 0 |
+| num_support_tickets | 0 |
+| churn | 0 |
+
+**5. Fix Data Types**
+
+Converted binary columns to integer format and categorical columns to appropriate category types. This ensures correct data representation and improves efficiency for analysis and model training.
+
+```PYTHON
+#Convert binary columns properly
+binary_cols = ['tech_support', 'streaming_service', 'paperless_billing', 'churn']
+for col in binary_cols:
+    df[col] = df[col].astype(int)
+```
+
+```PYTHON
+#Convert categorical columns
+categorical_cols = ['contract_type', 'internet_service', 'payment_method']
+for col in categorical_cols:
+    df[col] = df[col].astype('category')
+```
+
+**6. Validate Data Integrity**
+
+Validated data integrity by checking for duplicate records in the dataset. No duplicate entries were found, confirming data consistency.
+
+```PYTHON
+#Check duplicates
+df.duplicated().sum()
+#There were no duplicates
+```
+
+**7. Validate logical relationships**
+
+Validated logical relationships by removing records with unrealistic values, such as zero or negative tenure and charges. This ensures the dataset aligns with real-world business rules and improves model reliability.
+
+```PYTHON
+#Check unrealistic values
+# tenure should be >= 1
+df = df[df['tenure_months'] >= 1]
+# charges should be positive
+df = df[df['monthly_charges'] > 0]
+```
+
+**8. Outlier Detection**
+Performed outlier detection by visualizing the distribution of monthly_charges using a histogram. This helps identify extreme values and understand the overall spread of the data before modelling.
+
+```PYTHON
+import matplotlib.pyplot as plt
+df['monthly_charges'].hist(bins=30)
+plt.title("Monthly Charges Distribution")
+plt.show()
+```
+![](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System/blob/main/Monthly%20Charge%20Distribution.png)
