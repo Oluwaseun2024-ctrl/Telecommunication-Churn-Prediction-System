@@ -259,6 +259,7 @@ df = df[df['monthly_charges'] > 0]
 ```
 
 **8. Outlier Detection**
+
 Performed outlier detection by visualizing the distribution of monthly_charges using a histogram. This helps identify extreme values and understand the overall spread of the data before modelling.
 
 ```PYTHON
@@ -268,3 +269,87 @@ plt.title("Monthly Charges Distribution")
 plt.show()
 ```
 ![](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System/blob/main/Monthly%20Charge%20Distribution.png)
+
+## EXPLORATORY DATA ANALYSIS (EDA)
+**1. Target Variable Analysis (Churn)**
+
+Analysed the distribution of the target variable (churn) to understand class balance. Results show that ~23% of customers churned while ~77% were retained, indicating a moderately imbalanced dataset. The dataset shows a noticeable churn rate (~23%), highlighting a meaningful business risk and the need for targeted retention strategies.
+
+```PYTHON
+df['churn'].value_counts(normalize=True)
+```
+| Churn | Proportion |
+|---|---:|
+| 0 | 0.7694 |
+| 1 | 0.2306 |
+
+```PYTHON
+import matplotlib.pyplot as plt
+df['churn'].value_counts().plot(kind='bar')
+plt.title("Churn Distribution")
+plt.xticks(rotation=0)
+plt.show()
+```
+![](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System/blob/main/Churn%20Distribution.png)
+
+**2. Numerical Features vs Churn**
+
+Analysed numerical features against churn to identify key behavioural differences between retained and churned customers. Churned customers tend to have shorter tenure, higher monthly charges, lower satisfaction scores, and more support tickets, indicating dissatisfaction and higher service friction. 
+
+Customers with high monthly costs and frequent support interactions are significantly more likely to churn, making them critical targets for retention strategies.
+
+```PYTHON
+#Grouped statistics
+df.groupby('churn')[[
+    'tenure_months',
+    'monthly_charges',
+    'total_charges',
+    'satisfaction_score',
+    'num_support_tickets'
+]].mean()
+```
+| Churn | Average Tenure (Months) | Average Monthly Charges | Average Total Charges | Average Satisfaction Score | Average Support Tickets |
+|---|---:|---:|---:|---:|---:|
+| 0 | 37.40 | 73.36 | 2703.48 | 3.17 | 1.36 |
+| 1 | 30.70 | 84.64 | 2610.04 | 2.44 | 1.99 |
+
+```PYTHON
+#Visual distributions
+import seaborn as sns
+num_cols = [
+    'tenure_months', 'monthly_charges',
+    'total_charges', 'satisfaction_score',
+    'num_support_tickets'
+]
+for col in num_cols:
+    plt.figure()
+    sns.boxplot(x='churn', y=col, data=df)
+    plt.title(f"{col} vs Churn")
+    plt.show()
+```
+![](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System/blob/main/Monthly%20Charges%20vs%20Churn.png)
+![](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System/blob/main/Num%20support%20tickets%20vs%20Churn.png)
+![](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System/blob/main/Satisfaction%20score%20vs%20Churn.png)
+![](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System/blob/main/Tenure%20vs%20Churn.png)
+![](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System/blob/main/Total%20Charges%20vs%20Churn.png)
+
+**3. Categorical Features vs Churn**
+
+Analysed categorical features against churn to uncover patterns in customer behavior. Customers on month-to-month contracts and fiber optic services show higher churn rates, while longer contracts show stronger retention; payment method has a weaker impact, with only slight increases in churn for manual payment options.
+Contract type and service usage are the strongest categorical drivers of churn, while payment method plays a minimal role.
+
+```PYTHON
+#Contract Type
+pd.crosstab(df['contract_type'], df['churn'], normalize='index')
+```
+| Contract Type | Churn = 0 | Churn = 1 |
+|---|---:|---:|
+| Month-to-month | 0.725437 | 0.274563 |
+| One year | 0.829641 | 0.170359 |
+| Two year | 0.841446 | 0.158554 |
+
+```PYTHON
+sns.countplot(x='contract_type', hue='churn', data=df)
+plt.show()
+```
+![](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System/blob/main/Contract%20type%20vs%20Churn.png)
