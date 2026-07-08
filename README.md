@@ -1121,7 +1121,7 @@ The Telecommunication Customer Churn Prediction System is deployed using Streaml
 
 **Application Link:**
 
-[https://telecommunicationchurnpredictionsystem.streamlit.app/](telecommunicationchurnpredictionsystem.streamlit.app)
+[https://telecommunicationchurnpredictionsystem.streamlit.app/](https://telecommunicationchurnpredictionsystem.streamlit.app/)
 
 Users can open the link in any web browser to interact with the churn prediction application. No local installation or additional setup is required.
 
