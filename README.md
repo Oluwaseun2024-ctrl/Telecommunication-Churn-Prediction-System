@@ -3,21 +3,22 @@ This project builds a machine learning model to predict customer churn using beh
 It identifies key churn drivers and provides insights to support targeted retention strategies and improve customer lifetime value.
 
 ## TABLE OF CONTENT
-- [Business objective]()
-- [Business Context]()
-- [Problem Statement]()
-- [Dataset Description]()
-- [Data Dictionary]()
-- [Data Cleaning & Processing]()
-- [Exploratory Data Analysis (EDA)]()
-- [Feature Engineering]()
-- [Encoding, Feature Selection, Train Test Split & Scaling]()
-- [Model Development, Model Evaluation/Performance and Tuning]()
-- [Key Insights]()
-- [Business Recommendations]()
-- [Final Executive Summary]()
-- [Deployment]()
-- [How to Run the Project]()
+- [Business objective](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System#business-objective)
+- [Business Context](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System#business-context)
+- [Problem Statement](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System#problem-statement)
+- [Dataset Description](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System#dataset-description)
+- [Data Dictionary](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System#data-dictionary)
+- [Data Cleaning & Processing](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System#data-cleaning--preprocessing)
+- [Exploratory Data Analysis (EDA)](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System#exploratory-data-analysis-eda)
+- [Feature Engineering](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System#feature-engineering)
+- [Encoding, Feature Selection, Train Test Split & Scaling](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System#encoding-feature-selection-train-test-split--scaling)
+- [Model Development](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System#model-development-and-evalaution)
+- [Model Evaluation/Performance and Tuning](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System#model-evaluation)
+- [Key Insights](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System#key-insights)
+- [Business Recommendations](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System#business-recommendations)
+- [Final Executive Summary](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System#final-execute-summary)
+- [Deployment](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System#deployment)
+- [How to Run the Project](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System#how-to-run-the-project)
 
 ## BUSINESS OBJECTIVE
 The objective of this project is to build a robust churn prediction model that proactively identifies customers at risk of leaving. This enables the business to take data-driven retention actions, minimize revenue loss, and maximize customer lifetime value.
