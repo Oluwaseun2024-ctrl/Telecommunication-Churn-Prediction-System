@@ -513,9 +513,12 @@ x_train[num_cols] = scaler.fit_transform(x_train[num_cols])
 x_test[num_cols] = scaler.transform(x_test[num_cols])
 ```
 
-MODEL DEVELOPMENT AND EVALAUTION
-Logistic Regression (Baseline Model)
+## MODEL DEVELOPMENT AND EVALAUTION
+**1. Logistic Regression (Baseline Model)**
+
 Logistic Regression was selected as the baseline classification model to predict whether a customer will churn or remain with the company. It provides a simple, interpretable approach for binary classification. The class_weight='balanced' parameter was used to address the imbalance in the target variable, where non-churning customers make up approximately 77% of the dataset and churning customers account for 23%.
+
+```python
 #Building model
 from sklearn.linear_model import LogisticRegression
 log_model = LogisticRegression(
@@ -534,27 +537,41 @@ print('accuracy_score:', accuracy_score(y_test, log_pred))
 print('precision_score:', precision_score(y_test, log_pred))
 print('recall_score:', recall_score(y_test, log_pred))
 print('f1_score:', f1_score(y_test, log_pred))
-Result:
+```
+
+**Result:**
 confusion_matrix:
+
  [[563 202]
+ 
  [ 80 155]]
+ 
 accuracy_score: 0.718
+
 precision_score: 0.4341736694677871
+
 recall_score: 0.6595744680851063
+
 f1_score: 0.5236486486486487
 
+```python
 #roc_auc_score
 from sklearn.metrics import roc_auc_score, roc_curve
 log_probs = log_model.predict_proba(x_test)[:, 1]
 print('roc_auc_score:', roc_auc_score(y_test, log_probs))
-Result:
+```
+
+**Result:**
 roc_auc_score: 0.7702405785009039
 
-Results Summary: The model achieved an accuracy of 71.8%, a precision of 43.42%, a recall of 65.96%, an F1-score of 52.36%, and a ROC-AUC score of 0.7702. The model correctly identified 155 out of 235 customers who churned, while missing 80 actual churners. Its recall indicates that it identified approximately 66% of actual churners, while its precision shows that some customers predicted to churn did not actually churn. The ROC-AUC score suggests a reasonable ability to distinguish between customers who churn and those who remain.
+**Results Summary:** The model achieved an accuracy of 71.8%, a precision of 43.42%, a recall of 65.96%, an F1-score of 52.36%, and a ROC-AUC score of 0.7702. The model correctly identified 155 out of 235 customers who churned, while missing 80 actual churners. Its recall indicates that it identified approximately 66% of actual churners, while its precision shows that some customers predicted to churn did not actually churn. The ROC-AUC score suggests a reasonable ability to distinguish between customers who churn and those who remain.
 These results establish a baseline for evaluating and comparing the performance of other classification models.
 
-Random Forest Model
+**2. Random Forest Model**
+
 Random Forest was selected to evaluate whether an ensemble of decision trees could improve churn prediction by capturing complex relationships and interactions among customer features. The model was configured with 100 decision trees, while class_weight='balanced' was used to account for the imbalance between churn and non-churn customers. The random_state=42 parameter ensures reproducibility.
+
+```python
 #Building Model
 from sklearn.ensemble import RandomForestClassifier
 rf_model = RandomForestClassifier(
@@ -574,27 +591,43 @@ print('accuracy_score:', accuracy_score(y_test, rf_pred))
 print('precision_score', precision_score(y_test, rf_pred))
 print('recall_score:', recall_score(y_test, rf_pred))
 print('f1_score:', f1_score(y_test, rf_pred))
-Result:
+```
+
+**Result:**
+
 confusion_matrix:
+ 
  [[707  58]
+ 
  [189  46]]
+
 accuracy_score: 0.753
+
 precision_score 0.4423076923076923
+
 recall_score: 0.19574468085106383
+
 f1_score: 0.2713864306784661
 
+```python
 #roc_auc_score
 from sklearn.metrics import roc_auc_score, roc_curve
 rf_probs = rf_model.predict_proba(x_test)[:, 1]
 print('roc_auc_score:', roc_auc_score(y_test, rf_probs))
-Result:
+```
+
+**Result:**
+
 roc_auc_score: 0.7222945348352108
 
-Results Summary: The model achieved an accuracy of 75.3%, a precision of 44.23%, a recall of 19.57%, an F1-score of 27.14%, and a ROC-AUC score of 0.7223. It correctly identified 46 out of 235 customers who churned, missing 189 actual churners. Although the model achieved a higher accuracy than the Logistic Regression baseline, its low recall indicates that it failed to identify most customers who churned. Its ROC-AUC score also suggests weaker overall discrimination between churners and non-churners than the baseline model.
+**Results Summary:** The model achieved an accuracy of 75.3%, a precision of 44.23%, a recall of 19.57%, an F1-score of 27.14%, and a ROC-AUC score of 0.7223. It correctly identified 46 out of 235 customers who churned, missing 189 actual churners. Although the model achieved a higher accuracy than the Logistic Regression baseline, its low recall indicates that it failed to identify most customers who churned. Its ROC-AUC score also suggests weaker overall discrimination between churners and non-churners than the baseline model.
 These results highlight the importance of evaluating multiple classification metrics rather than relying on accuracy alone, particularly when identifying customers at risk of churn is a key business objective.
 
-XGBoost (High-Performance Model)
+**3. XGBoost (High-Performance Model)**
+
 XGBoost was selected as a gradient-boosting classification model to evaluate whether sequentially combining decision trees could improve customer churn prediction. The scale_pos_weight=3.34 parameter was used to give greater importance to the minority churn class, while eval_metric='logloss' specified the evaluation metric used during training. The random_state=42 parameter ensures reproducibility.
+
+```python
 #Building Model
 from xgboost import XGBClassifier
 xgb_model = XGBClassifier(
@@ -614,37 +647,56 @@ print('accuracy_score:', accuracy_score(y_test, xgb_pred))
 print('precision_score', precision_score(y_test, xgb_pred))
 print('recall_score', recall_score(y_test, xgb_pred))
 print('f1_score:', f1_score(y_test, xgb_pred))
-Result:
+```
+
+**Result:**
+
 confusion_matrix:
+
  [[616 149]
+ 
  [123 112]]
+
 accuracy_score: 0.728
+
 precision_score 0.42911877394636017
+
 recall_score 0.4765957446808511
+
 f1_score: 0.45161290322580644
 
+```python
 #roc_auc_score
 from sklearn.metrics import roc_auc_score, roc_curve
 xgb_probs = xgb_model.predict_proba(x_test)[:, 1]
 print('roc_auc_score:', roc_auc_score(y_test, xgb_probs))
-Result:
+```
+
+**Result:**
+
 roc_auc_score: 0.7397079682937004
 
-Results Summary: The model achieved an accuracy of 72.8%, a precision of 42.91%, a recall of 47.66%, an F1-score of 45.16%, and a ROC-AUC score of 0.7397. It correctly identified 112 out of 235 customers who churned, while missing 123 actual churners. Compared with the Random Forest model, XGBoost achieved substantially higher recall and F1-score, identifying more customers at risk of churn. However, its performance remained below the Logistic Regression baseline in recall, F1-score, and ROC-AUC.
+**Results Summary:** The model achieved an accuracy of 72.8%, a precision of 42.91%, a recall of 47.66%, an F1-score of 45.16%, and a ROC-AUC score of 0.7397. It correctly identified 112 out of 235 customers who churned, while missing 123 actual churners. Compared with the Random Forest model, XGBoost achieved substantially higher recall and F1-score, identifying more customers at risk of churn. However, its performance remained below the Logistic Regression baseline in recall, F1-score, and ROC-AUC.
 These results suggest that XGBoost offers a better balance between precision and recall than the Random Forest model in this configuration, although further evaluation is needed to determine the most suitable model for the business objective.
 
-MODEL EVALUATION
-Model	Accuracy	Precision	Recall	F1-score	ROC-AUC
-Logistic Regression	71.80%	43.42%	65.96%	52.36%	0.7702
-Random Forest	75.30%	44.23%	19.57%	27.14%	0.7223
-XGBoost	72.80%	42.91%	47.66%	45.16%	0.7397
+## MODEL EVALUATION
+| Model | Accuracy | Precision | Recall | F1-score | ROC-AUC |
+|---|---:|---:|---:|---:|---:|
+| Logistic Regression | 71.80% | 43.42% | 65.96% | 52.36% | 0.7702 |
+| Random Forest | 75.30% | 44.23% | 19.57% | 27.14% | 0.7223 |
+| XGBoost | 72.80% | 42.91% | 47.66% | 45.16% | 0.7397 |
 
 The initial evaluation compared Logistic Regression, Random Forest, and XGBoost using accuracy, precision, recall, F1-score, and ROC-AUC. Since the primary objective is to identify customers at risk of churning, particular attention was given to recall and F1-score rather than accuracy alone.
+
 Among the three models, Logistic Regression was selected for further tuning because it achieved the highest recall (65.96%), F1-score (52.36%), and ROC-AUC (0.7702). Although Random Forest recorded the highest accuracy (75.3%), its recall of 19.57% indicates that it missed most actual churners. XGBoost performed better than Random Forest in identifying churners, achieving a recall of 47.66% and an F1-score of 45.16%, but it did not outperform Logistic Regression on the key evaluation metrics.
+
 Logistic Regression therefore provided the strongest initial balance of churn detection and overall classification performance. Its ROC-AUC score also indicated better discrimination between churners and non-churners than the other two models. Consequently, it was selected as the preferred baseline model for further hyperparameter tuning and decision-threshold evaluation to improve its predictive performance.
 
-Tuning Logistic Regression's C parameter
+**Tuning Logistic Regression's C parameter**
+
 The Logistic Regression model was further tuned by testing different values of the regularization parameter C: 0.1, 1.0, and 10.0. The purpose was to determine how the strength of regularization affects the model's ability to identify customers likely to churn. A smaller C applies stronger regularization, while a larger C applies weaker regularization. The model retained class_weight='balanced' to account for the imbalance in the target variable.
+
+```python
 #Tuning
 from sklearn.linear_model import LogisticRegression
 for c in [0.1, 1.0, 10.0]:
@@ -662,30 +714,50 @@ for c in [0.1, 1.0, 10.0]:
     print("Precision:", precision_score(y_test, y_pred, zero_division=0))
     print("F1-score:", f1_score(y_test, y_pred, zero_division=0))
     print("ROC-AUC:", roc_auc_score(y_test, y_probs))
-Result:
-C = 0.1
+```
+
+**Result:**
+
+**C = 0.1**
+
 Recall: 0.6638297872340425
+
 Precision: 0.43333333333333335
+
 F1-score: 0.5243697478991597
+
 ROC-AUC: 0.769979140592407
 
-C = 1.0
+
+**C = 1.0**
+
 Recall: 0.6595744680851063
+
 Precision: 0.4341736694677871
+
 F1-score: 0.5236486486486487
+
 ROC-AUC: 0.7702405785009039
 
-C = 10.0
+
+**C = 10.0**
+
 Recall: 0.6638297872340425
+
 Precision: 0.43575418994413406
+
 F1-score: 0.5261382799325464
+
 ROC-AUC: 0.7703073286052009
 
-Results Summary: Among the three configurations, C=10.0 produced the best overall results, achieving a recall of 66.38%, precision of 43.58%, F1-score of 52.61%, and ROC-AUC of 0.7703. It achieved the highest F1-score and ROC-AUC, while its recall matched that of C=0.1. However, the improvements were marginal, indicating that adjusting C alone had a limited effect on model performance.
+**Results Summary:** Among the three configurations, C=10.0 produced the best overall results, achieving a recall of 66.38%, precision of 43.58%, F1-score of 52.61%, and ROC-AUC of 0.7703. It achieved the highest F1-score and ROC-AUC, while its recall matched that of C=0.1. However, the improvements were marginal, indicating that adjusting C alone had a limited effect on model performance.
 Therefore, C=10.0 was selected as the preferred configuration for the next stage of evaluation, which involved experimenting with the classification decision threshold to improve churn detection.
 
-Testing Threshold
+**Testing Threshold**
+
 After selecting C=10.0 for Logistic Regression, different classification thresholds were tested to determine how the decision boundary affects the model's ability to identify customers likely to churn. The default threshold of 0.5 was compared with lower thresholds of 0.4, 0.3, and 0.2. An additional threshold of 0.45 was evaluated to find a more suitable balance between precision and recall.
+
+```python
 # Testing a lower threshold
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
@@ -714,39 +786,70 @@ for threshold in [0.5, 0.4, 0.3, 0.2]:
     print("Precision:", precision_score(y_test, y_pred, zero_division=0))
     print("Recall:", recall_score(y_test, y_pred, zero_division=0))
     print("F1-score:", f1_score(y_test, y_pred, zero_division=0))
-Result:
-Threshold: 0.5
+```
+
+**Result:**
+
+**Threshold: 0.5**
+
 Confusion Matrix:
+
  [[563 202]
+ 
  [ 79 156]]
+
 Precision: 0.43575418994413406
+
 Recall: 0.6638297872340425
+
 F1-score: 0.5261382799325464
 
-Threshold: 0.4
+
+**Threshold: 0.4**
+
 Confusion Matrix:
+
  [[459 306]
+ 
  [ 49 186]]
+
 Precision: 0.3780487804878049
+
 Recall: 0.7914893617021277
+
 F1-score: 0.5116918844566712
 
-Threshold: 0.3
+
+**Threshold: 0.3**
+
 Confusion Matrix:
+
  [[353 412]
+ 
  [ 22 213]]
+
 Precision: 0.3408
+
 Recall: 0.9063829787234042
+
 F1-score: 0.49534883720930234
 
-Threshold: 0.2
+
+**Threshold: 0.2**
+
 Confusion Matrix:
+
  [[216 549]
+ 
  [  3 232]]
+
 Precision: 0.2970550576184379
+
 Recall: 0.9872340425531915
+
 F1-score: 0.4566929133858268
 
+```python
 # threshold = 0.45
 threshold = 0.45
 y_pred = (y_probs >= threshold).astype(int)
@@ -754,85 +857,129 @@ print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
 print("Precision:", precision_score(y_test, y_pred, zero_division=0))
 print("Recall:", recall_score(y_test, y_pred, zero_division=0))
 print("F1-score:", f1_score(y_test, y_pred, zero_division=0))
-Result:
+```
+
+**Result:**
+
 Confusion Matrix:
+
  [[511 254]
+ 
  [ 58 177]]
+
 Precision: 0.41067285382830626
+
 Recall: 0.7531914893617021
+
 F1-score: 0.5315315315315315
 
-Results Summary: Lowering the classification threshold increased recall but reduced precision. At the default threshold of 0.5, the model achieved a recall of 66.38% and an F1-score of 52.61%. At a threshold of 0.2, recall increased to 98.72%, but precision fell to 29.71%, meaning many customers flagged as potential churners did not actually churn.
+**Results Summary:** Lowering the classification threshold increased recall but reduced precision. At the default threshold of 0.5, the model achieved a recall of 66.38% and an F1-score of 52.61%. At a threshold of 0.2, recall increased to 98.72%, but precision fell to 29.71%, meaning many customers flagged as potential churners did not actually churn.
+
 The threshold of 0.45 produced the highest F1-score of 53.15%, with a precision of 41.07% and a recall of 75.32%. At this threshold, the model correctly identified 177 of the 235 actual churners, compared with 156 at the default threshold. Although this improvement came with more false-positive predictions, it provided a better balance between precision and recall among the tested thresholds.
+
 Therefore, 0.45 was selected as the current candidate threshold because it improved churn detection while maintaining a stronger F1-score than the other tested thresholds. The final choice should ultimately reflect the business cost of missed churners versus unnecessary retention interventions.
 
-KEY INSIGHTS
+## KEY INSIGHTS
 1.	Class Imbalance: The dataset contains approximately 77% non-churning customers and 23% churning customers.
 This imbalance makes it important to evaluate models using precision, recall, F1-score, and ROC-AUC rather than relying on accuracy alone.
+
 2.	Logistic Regression Performed Best Initially: Among the three baseline models, Logistic Regression achieved the
 highest recall (65.96%), F1-score (52.36%), and ROC-AUC (0.7702). It was therefore selected for further tuning.
+
 3.	Random Forest Had Weak Churn Detection: Although Random Forest recorded the highest baseline accuracy
 (75.30%), its recall was only 19.57%. This means it failed to identify most customers who actually churned, making it less suitable for the primary business objective.
+
 4.	XGBoost Improved on Random Forest: XGBoost achieved a recall of 47.66% and an F1-score of 45.16%, 
 outperforming Random Forest in identifying churners. However, it did not outperform Logistic Regression on the key evaluation metrics.
+
 5.	Regularization Tuning Produced Marginal Improvements: Testing different values of the Logistic Regression C 
 parameter showed that C=10.0 achieved the best F1-score (52.61%) and ROC-AUC (0.7703). However, the improvements over the initial configuration were relatively small.
+
 6.	Classification Threshold Affected Churn Detection: Lowering the classification threshold increased the model's 
 recall because more customers were classified as potential churners. However, this also increased false-positive predictions and reduced precision.
+
 7.	Threshold 0.45 Provided the Best Balance Among Tested Thresholds: At this threshold, the model achieved a 
 precision of 41.07%, recall of 75.32%, and F1-score of 53.15%. It correctly identified 177 out of 235 actual churners, compared with 156 at the default threshold of 0.5.
+
 8.	Business Objective Remains Central: Since the main objective is to identify as many potential churners as possible, 
 recall is an important performance metric. However, precision must also be considered to ensure that retention resources are not wasted on too many customers who would otherwise remain.
 
-Overall Finding
+**Overall Finding**
+
 Logistic Regression emerged as the strongest candidate among the baseline models and showed further improvement after regularization and threshold tuning. The configuration with C=10.0 and a classification threshold of 0.45 currently provides the best balance of precision and recall among the tested configurations. It is therefore the preferred candidate for further evaluation and potential deployment.
 
-BUSINESS RECOMMENDATIONS
+## BUSINESS RECOMMENDATIONS
 Based on the customer churn prediction analysis and the model evaluation results, the following business recommendations are proposed to help reduce customer attrition, improve customer retention, and support data-driven decision-making.
+
 1.	Implement a Proactive Customer Retention Strategy
+
 The business should use the churn prediction model to identify customers who are likely to leave before they actually churn. Rather than waiting for customers to cancel their subscriptions, the company should proactively reach out to high-risk customers with appropriate retention offers and support.
+
 2.	Prioritize High-Risk Customers
+
 Customers flagged as potential churners should be prioritized for retention campaigns. Since the selected threshold of 0.45 achieved a recall of 75.32%, the model identified 177 out of 235 actual churners in the test set. This demonstrates its potential to support early identification and intervention
+
 3.	Investigate Customer Dissatisfaction
+
 The business should regularly monitor customer satisfaction scores, complaints, and support tickets. Customers experiencing repeated service issues or low satisfaction should receive timely assistance to address their concerns before they decide to leave.
+
 4.	Review Pricing and Customer Spending
+
 The business should examine the relationship between monthly charges, total charges, and customer churn. Where pricing or perceived value may be contributing to dissatisfaction, management should consider flexible subscription plans, targeted discounts, and packages that better match customers' needs.
+
 5.	Develop Targeted Retention Campaigns
+
 Instead of applying the same retention strategy to every customer, the business should tailor interventions according to individual risk levels and customer characteristics. Possible interventions include loyalty rewards, personalized offers, improved customer support, and subscription upgrades or adjustments.
+
 6.	Strengthen Customer Engagement
+
 The company should establish regular communication with customers through follow-up calls, emails, surveys, and personalized service recommendations. Consistent engagement can help identify dissatisfaction early and improve the overall customer experience.
+
 7.	Monitor Model Performance Regularly
+
 The churn prediction model should be evaluated periodically using metrics such as recall, precision, F1-score, and ROC-AUC. Since customer behaviour may change over time, the model should be retrained when necessary to maintain its predictive performance.
+
 8.	Measure the Effectiveness of Retention Campaigns
+
 The business should track the outcomes of retention interventions by monitoring how many flagged customers remain active after receiving support or offers. This will help determine whether the retention strategies are effective and whether the financial benefits justify their costs.
 
-Expected Business Impact
-•	Implementing these recommendations can help the business:
-•	Reduce customer attrition and improve retention rates.
-•	Identify potential churners earlier.
-•	Improve customer satisfaction and loyalty.
-•	Allocate retention resources more effectively.
-•	Reduce revenue losses associated with customer churn.
-•	Use predictive analytics to support strategic business decisions.
+**Expected Business Impact**
+- Implementing these recommendations can help the business:
+- Reduce customer attrition and improve retention rates.
+- Identify potential churners earlier.
+- Improve customer satisfaction and loyalty.
+- Allocate retention resources more effectively.
+- Reduce revenue losses associated with customer churn.
+- Use predictive analytics to support strategic business decisions.
 
-Overall Recommendation: The business should adopt a proactive, data-driven customer retention strategy by integrating the churn prediction model into its customer management process. The model should serve as a decision-support tool, helping management identify at-risk customers and prioritize appropriate retention actions rather than automatically determining which customers receive interventions.
+**Overall Recommendation:** The business should adopt a proactive, data-driven customer retention strategy by integrating the churn prediction model into its customer management process. The model should serve as a decision-support tool, helping management identify at-risk customers and prioritize appropriate retention actions rather than automatically determining which customers receive interventions.
 Important: These are proposed business actions based on your modelling results. Their actual impact on churn reduction should be measured after implementation.
 
-FINAL EXECUTE SUMMARY
+## FINAL EXECUTE SUMMARY
 This project focused on developing a Customer Churn Prediction System using machine learning to identify customers who are likely to leave a business. The objective was to uncover churn patterns, build a predictive model, and provide actionable insights to support customer retention.
+
 After data cleaning, preprocessing, and feature engineering, three classification models were evaluated: Logistic Regression, Random Forest, and XGBoost. Logistic Regression emerged as the best baseline model and was selected for further tuning.
+
 After testing different regularization strengths and classification thresholds, the Logistic Regression model with C=10.0 and a threshold of 0.45 achieved a precision of 41.07%, recall of 75.32%, and F1-score of 53.15%. It successfully identified 177 out of 235 actual churners in the test dataset.
+
 The findings demonstrate the potential of machine learning to support proactive customer retention. Recommendations include prioritizing high-risk customers, improving customer satisfaction, developing targeted retention strategies, and monitoring model performance regularly.
+
 Overall, the project provides a foundation for data-driven customer retention decisions, helping businesses identify potential churners early and reduce revenue losses associated with customer attrition.
 
-DEPLOYMENT
+## DEPLOYMENT
 Deployed the trained churn prediction model using a Streamlit web application to enable interactive and user-friendly access.
+
 The deployment integrates the trained Logistic Regression model with preprocessing components, including feature scaling and encoding, ensuring consistency between training and real-time predictions.
-Users can input customer details through the interface, and the application processes the data, applies the same transformations used during model training, and generates a churn prediction along with the associated probability.
+Users can input customer details through the interface, and the application processes the data, applies the same transformations used during model training, and generates a churn prediction along with the
+associated probability.
+
 This deployment allows non-technical stakeholders to easily assess customer churn risk in real time, supporting data-driven decision-making and proactive retention strategies.
+
 Overall, the Streamlit application serves as a lightweight and effective solution for operationalizing the machine learning model in a business environment.
 
-App Scripts
+**App Scripts**
+
+```python
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -1380,11 +1527,13 @@ if submitted:
             hide_index=True,
             use_container_width=True
         )
+```
 
-HOW TO RUN THE PROJECT
+## HOW TO RUN THE PROJECT
 The Telecommunication Customer Churn Prediction System is deployed using Streamlit Cloud and can be accessed directly through the application link below:
-Application Link:
-telecommunication-churn-prediction-system.streamlit.app
+
+Application Link: [Click here](telecommunication-churn-prediction-system.streamlit.app)
+
 Users can open the link in any web browser to interact with the churn prediction application. No local installation or additional setup is required.
 The application allows users to input customer information and receive a churn prediction result generated by the trained machine learning model.
 
