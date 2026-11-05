@@ -61,7 +61,7 @@ This dataset is structured to support churn prediction by providing both behavio
 | churn | Target variable | Binary |
 
 ## DATA CLEANING & PREPROCESSING
-1. Columns Check
+**1. Columns Check**
 
 Checked for missing values across all columns to assess data quality. Identified missing entries in total_charges and satisfaction_score, which require handling before modelling.
 
@@ -85,7 +85,7 @@ df.isna().sum()
 | num_support_tickets | 0 |
 | churn | 0 |
 
-2. Fix total_charges
+**2. Fix total_charges**
 
 Cleaned and validated the total_charges column by handling blanks, converting to numeric, and treating negative values as missing based on business logic. Missing values were then imputed using the median to account for the skewed distribution and preserve data integrity.
 
@@ -157,39 +157,52 @@ df.isna().sum()
 #Handle missing values
 df['total_charges'].hist()
 ```
+![](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System/blob/main/Total%20Charges%20Distribution.png)
 
- 
+```Python
 #Because the distribution above is skewed, I used median to replace the missing values
 df['total_charges'].fillna(df['total_charges'].median(), inplace=True)
+```
 
-3.	Handled Missing satisfaction_score
+**3.	Handled Missing satisfaction_score**
+
 Handled missing values in satisfaction_score by imputing with the median, as it is an ordinal feature (1–5 scale). This ensures consistency while preserving the inherent ranking structure of the data.
+
+```Python
 #Checking the distribution on satisfaction score
 df['satisfaction_score'].hist()
- 
+```
+![](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System/blob/main/Satisfaction%20Score%20Distribution.png)
+
+```Python
 #Since it's ordinal (1–5):
 #I Imputed with median
 df['satisfaction_score'].fillna(df['satisfaction_score'].median(), inplace=True)
 
 #Checked missing values afters fixing them
 df.isna().sum()
-0	
-customer_id	0
-tenure_months	0
-monthly_charges	0
-total_charges	0
-contract_type	0
-internet_service	0
-tech_support	0
-streaming_service	0
-payment_method	0
-paperless_billing	0
-satisfaction_score	0
-num_support_tickets	0
-churn	0
+```
+| Column | Missing Values |
+|---|---:|
+| customer_id | 0 |
+| tenure_months | 0 |
+| monthly_charges | 0 |
+| total_charges | 0 |
+| contract_type | 0 |
+| internet_service | 0 |
+| tech_support | 0 |
+| streaming_service | 0 |
+| payment_method | 0 |
+| paperless_billing | 0 |
+| satisfaction_score | 0 |
+| num_support_tickets | 0 |
+| churn | 0 |
 
-4.	Fix Data Types
+**4.	Fix Data Types**
+
 Converted binary columns to integer format and categorical columns to appropriate category types. This ensures correct data representation and improves efficiency for analysis and model training.
+
+```Python
 #Convert binary columns properly
 binary_cols = ['tech_support', 'streaming_service', 'paperless_billing', 'churn']
 for col in binary_cols:
@@ -199,46 +212,71 @@ for col in binary_cols:
 categorical_cols = ['contract_type', 'internet_service', 'payment_method']
 for col in categorical_cols:
     df[col] = df[col].astype('category')
+```
 
-5.	Validate Data Integrity
+**5.	Validate Data Integrity**
+
 Validated data integrity by checking for duplicate records in the dataset. No duplicate entries were found, confirming data consistency.
+
+```Python
 #Check duplicates
 df.duplicated().sum()
 #There were no duplicates
+```
 
-6.	Validate logical relationships
+**6.	Validate logical relationships**
+
 Validated logical relationships by removing records with unrealistic values, such as zero or negative tenure and charges. This ensures the dataset aligns with real-world business rules and improves model reliability.
-Check unrealistic values
+
+```Python
+#Check unrealistic values
 # tenure should be >= 1
 df = df[df['tenure_months'] >= 1]
 # charges should be positive
 df = df[df['monthly_charges'] > 0]
+```
 
-7.	Outlier Detection
+**7.	Outlier Detection**
+
 Performed outlier detection by visualizing the distribution of monthly_charges using a histogram. This helps identify extreme values and understand the overall spread of the data before modelling.
+
+```Python
 import matplotlib.pyplot as plt
 df['monthly_charges'].hist(bins=30)
 plt.title("Monthly Charges Distribution")
 plt.show()
- 
+```
+![](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System/blob/main/Monthly%20Charges%20Distribution.png)
 
-EXPLORATORY DATA ANALYSIS (EDA)
-1.	Target Variable Analysis (Churn)
+## EXPLORATORY DATA ANALYSIS (EDA)
+**1.	Target Variable Analysis (Churn)**
+
 Analysed the distribution of the target variable (churn) to understand class balance. Results show that ~23% of customers churned while ~77% were retained, indicating a moderately imbalanced dataset. The dataset shows a noticeable churn rate (~23%), highlighting a meaningful business risk and the need for targeted retention strategies.
-df['churn'].value_counts(normalize=True)
-churn	
-0	0.7694
-1	0.2306
 
+```Python
+df['churn'].value_counts(normalize=True)
+```
+| Churn | Proportion |
+|---|---:|
+| 0 (No Churn) | 0.7694 (76.94%) |
+| 1 (Churn) | 0.2306 (23.06%) |
+
+```Python
 import matplotlib.pyplot as plt
 df['churn'].value_counts().plot(kind='bar')
 plt.title("Churn Distribution")
 plt.xticks(rotation=0)
 plt.show()
+```
+![](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System/blob/main/Churn%20Analysis.png)
  
-2.	Numerical Features vs Churn
+**2.	Numerical Features vs Churn**
+
 Analysed numerical features against churn to identify key behavioural differences between retained and churned customers. Churned customers tend to have shorter tenure, higher monthly charges, lower satisfaction scores, and more support tickets, indicating dissatisfaction and higher service friction. 
+
 Customers with high monthly costs and frequent support interactions are significantly more likely to churn, making them critical targets for retention strategies.
+
+```python
 #Grouped statistics
 df.groupby('churn')[[
     'tenure_months',
@@ -247,95 +285,160 @@ df.groupby('churn')[[
     'satisfaction_score',
     'num_support_tickets'
 ]].mean()
+```
 
-churn	tenure_months	monthly_charges	total_charges	satisfaction_score	num_support_tickets
-0	37.395893	73.358342	2703.481009	3.174942	1.357941
-1	30.695577	84.635429	2610.039705	2.440590	1.986990
+| Churn | Tenure (Months) | Monthly Charges | Total Charges | Satisfaction Score | Support Tickets |
+|---|---:|---:|---:|---:|---:|
+| 0 (No Churn) | 37.40 | 73.36 | 2703.48 | 3.17 | 1.36 |
+| 1 (Churn) | 30.70 | 84.64 | 2610.04 | 2.44 | 1.99 |
 
-3.	Categorical Features vs Churn
+**3.	Categorical Features vs Churn**
+
 Analysed categorical features against churn to uncover patterns in customer behavior. Customers on month-to-month contracts and fiber optic services show higher churn rates, while longer contracts show stronger retention; payment method has a weaker impact, with only slight increases in churn for manual payment options.
+
 Contract type and service usage are the strongest categorical drivers of churn, while payment method plays a minimal role.
+
+```python
 #Contract Type
 pd.crosstab(df['contract_type'], df['churn'], normalize='index')
-contract_type	0	1
-Month-to-month	0.725437	0.274563
-One year	0.829641	0.170359
-Two year	0.841446	0.158554
+```
 
+| Contract Type | No Churn (0) | Churn (1) |
+|---|---:|---:|
+| Month-to-month | 0.725437 (72.54%) | 0.274563 (27.46%) |
+| One year | 0.829641 (82.96%) | 0.170359 (17.04%) |
+| Two year | 0.841446 (84.14%) | 0.158554 (15.86%) |
+
+```python
 sns.countplot(x='contract_type', hue='churn', data=df)
 plt.show()
- 
+```
+![](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System/blob/main/Contract%20Type%20vs%20Churn.png)
+
+```python
 #Internet Service
 pd.crosstab(df['internet_service'], df['churn'], normalize='index')
-internet_service	0	1
-DSL	0.841470	0.158530
-Fiber optic	0.694708	0.305292
-No	0.864865	0.135135
+```
 
+| Internet Service | No Churn (0) | Churn (1) |
+|---|---:|---:|
+| DSL | 0.841470 (84.15%) | 0.158530 (15.85%) |
+| Fiber optic | 0.694708 (69.47%) | 0.305292 (30.53%) |
+| No Internet Service | 0.864865 (86.49%) | 0.135135 (13.51%) |
+
+```python
 sns.countplot(x='internet_service', hue='churn', data=df)
 plt.show()
- 
+```
+![](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System/blob/main/Internet%20service%20vs%20Churn.png)
+
+```python
 #Payment Method
 pd.crosstab(df['payment_method'], df['churn'], normalize='index')
-payment_method	0	1
-Bank transfer	0.777417	0.222583
-Credit card	0.779715	0.220285
-Electronic check	0.764419	0.235581
-Mailed check	0.756270	0.243730
+```
 
+| Payment Method | No Churn (0) | Churn (1) |
+|---|---:|---:|
+| Bank transfer | 0.777417 (77.74%) | 0.222583 (22.26%) |
+| Credit card | 0.779715 (77.97%) | 0.220285 (22.03%) |
+| Electronic check | 0.764419 (76.44%) | 0.235581 (23.56%) |
+| Mailed check | 0.756270 (75.63%) | 0.243730 (24.37%) |
+
+```python
 sns.countplot(x='payment_method', hue='churn', data=df)
 plt.show()
+```
+![](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System/blob/main/Payment%20Method%20Vs%20Churn.png)
  
-4.	Binary Features vs Churn
+**4.	Binary Features vs Churn**
+
 Analyzed binary features against churn to identify their impact on customer behavior. Customers without tech support show significantly higher churn, while streaming service and paperless billing have minimal influence.
+
 Lack of tech support is a strong churn indicator, highlighting the importance of customer support in retention.
+
+```python
 binary_cols = ['tech_support', 'streaming_service', 'paperless_billing']
 for col in binary_cols:
     print(pd.crosstab(df[col], df['churn'], normalize='index'))
-tech_support   	0	1
-0             	0.718026 	 0.281974
-1             	0.845126 	 0.154874
+```
 
-streaming_service                    	0	1
-0                  	0.764128 	 0.235872
-1                  	0.774433 	 0.225567
+1. Tech Support
 
-paperless_billing                    	0	1
-0                 	 0.778135  	0.221865
-1                 	 0.765457  	0.234543
+| Tech Support | No Churn (0) | Churn (1) |
+|---|---:|---:|
+| 0 (No) | 0.718026 (71.80%) | 0.281974 (28.20%) |
+| 1 (Yes) | 0.845126 (84.51%) | 0.154874 (15.49%) |
 
+2. Streaming Service
+
+| Streaming Service | No Churn (0) | Churn (1) |
+|---|---:|---:|
+| 0 (No) | 0.764128 (76.41%) | 0.235872 (23.59%) |
+| 1 (Yes) | 0.774433 (77.44%) | 0.225567 (22.56%) |
+
+3. Paperless Billing
+
+| Paperless Billing | No Churn (0) | Churn (1) |
+|---|---:|---:|
+| 0 (No) | 0.778135 (77.81%) | 0.221865 (22.19%) |
+| 1 (Yes) | 0.765457 (76.55%) | 0.234543 (23.45%) |
+
+```python
 #Visualizing the above
 for col in binary_cols:
     sns.countplot(x=col, hue='churn', data=df)
     plt.show()
-   
+```
+![](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System/blob/main/Tech%20Support%20vs%20Churn.png)
 
-FEATURE ENGINEERING
-1.	Customer Lifetime Value (CLV proxy)
+![](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System/blob/main/Streaming%20services%20Vs%20Churn.png)
+
+![](https://github.com/Oluwaseun2024-ctrl/Telecommunication-Churn-Prediction-System/blob/main/Paperless%20Billing%20vs%20Churn.png)
+
+## FEATURE ENGINEERING
+**1.	Customer Lifetime Value (CLV proxy)**
+
 Created a proxy for Customer Lifetime Value (CLV) by calculating the average monthly value per customer using total charges and tenure. This feature helps capture customer value over time and can improve churn prediction by highlighting high- vs low-value customers.
+
+```python
 df['avg_monthly_value'] = df['total_charges'] / df['tenure_months']
+```
 
-2.	Charge Intensity
+**2.	Charge Intensity**
+
 Created a charge intensity feature by measuring total charges relative to customer support interactions. This helps capture how much value a customer generates per issue raised, providing insight into cost vs service experience.
-df['charges_per_ticket'] = df['total_charges'] / (df['num_support_tickets'] + 1)
 
-3.	Engagement Score (Composite Feature)
+```python
+df['charges_per_ticket'] = df['total_charges'] / (df['num_support_tickets'] + 1)
+```
+
+**3.	Engagement Score (Composite Feature)**
+
 Created an engagement score by combining tenure, satisfaction, and support interactions into a single composite metric. This feature captures overall customer engagement, helping the model distinguish between highly engaged and at-risk customers.
+
+```python
 df['engagement_score'] = (
     df['tenure_months'] * 0.4 +
     df['satisfaction_score'] * 0.3 -
     df['num_support_tickets'] * 0.3
 )
+```
 
-4.	High Risk Customer Flag
+**4.	High Risk Customer Flag**
 Created a high-risk customer flag by identifying customers with low satisfaction scores and high support ticket counts. This feature helps the model quickly capture customers with strong churn signals based on negative experience indicators.
+
+```python
 df['high_risk'] = (
     (df['satisfaction_score'] <= 2) &
     (df['num_support_tickets'] >= 3)
 ).astype(int)
+```
 
-5.	Tenure Segmentation
+**5.	Tenure Segmentation**
+
 Segmented customers into tenure groups (new, mid, long) based on their subscription duration. This helps capture customer lifecycle stages and improves the model’s ability to detect churn patterns across different tenure levels.
+
+```python
 def tenure_group(x):
     if x <= 12:
         return 'new'
@@ -344,38 +447,59 @@ def tenure_group(x):
     else:
         return 'long'
 df['tenure_group'] = df['tenure_months'].apply(tenure_group)
+```
 
-ENCODING, FEATURE SELECTION, TRAIN TEST SPLIT & SCALING
-Encoding Categorical Variables
+## ENCODING, FEATURE SELECTION, TRAIN TEST SPLIT & SCALING
+**Encoding Categorical Variables**
+
 Converted categorical variables into numerical format using One-Hot Encoding to make them suitable for machine learning algorithms. Most models cannot interpret non-numeric data directly, so categorical features such as contract type, internet service, payment method, and tenure group were transformed into binary indicator variables. 
 The `drop_first=True` parameter was applied to avoid the dummy variable trap (multicollinearity), ensuring that redundant features are removed and the model remains stable and interpretable.
+
+```python
 df = pd.get_dummies(df, columns = [
     'contract_type', 'internet_service', 'payment_method', 'tenure_group'
 ], dtype = int)
+```
 
-Feature Selection Prep
+**Feature Selection Prep**
+
 Prepared the dataset for modeling by removing non-informative features and defining input and target variables. The `customer_id` column was dropped as it serves only as a unique identifier and does not contribute to predicting customer churn. Including such features can introduce noise and negatively impact model performance.
+
 The dataset was then split into features (`x`) and target (`y`), where `x` contains all independent variables and `y` represents the dependent variable (churn). This separation is essential for training machine learning models, as it clearly defines the inputs used for prediction and the outcome to be predicted.
+
+```python
 # Dropped unnecessary columns
 df = df.drop(columns=['customer_id'])
 
 # Define x and y
 x = df.drop('churn', axis=1)
 y = df['churn']
+```
 
-Train-Test Split
+**Train-Test Split**
+
 Split the dataset into training and testing sets to evaluate model performance on unseen data. An 80/20 split was used, where 80% of the data was allocated for training and 20% for testing. This ensures sufficient data for model learning while retaining a representative portion for evaluation.
+
 The stratify=y parameter was applied to preserve the original distribution of the target variable (churn) in both training and testing sets. This is particularly important for classification problems to prevent class imbalance from skewing results.
+
 A fixed random_state=42 was used to ensure reproducibility, allowing consistent results across multiple runs.
 After splitting, the training feature set (X_train) was inspected to confirm that all engineered and encoded features were correctly included, ensuring the dataset is properly structured for model training.
+
+```python
 #Train test split
 from sklearn.model_selection import train_test_split
 x_train, x_test, y_train, y_test = train_test_split(x, y, test_size = 0.2, random_state = 42)
+```
 
-Scaling
+**Scaling**
+
 Standardized numerical features to ensure consistent scale across all input variables. Selected continuous variables such as tenure, charges, satisfaction score, and engineered features were scaled using `StandardScaler`, which transforms data to have a mean of 0 and a standard deviation of 1. 
+
 The scaler was fitted only on the training data and then applied to both training and testing sets. This prevents data leakage, ensuring that information from the test set does not influence the training process.
+
 Feature scaling is particularly important for models that rely on distance or gradient-based optimization, as it ensures that no single feature disproportionately influences the model due to its scale.
+
+```python
 #Define columns to scale
 num_cols = [
    'monthly_charges', 'total_charges', 'satisfaction_score', 'avg_monthly_value',
@@ -387,6 +511,7 @@ from sklearn.preprocessing import StandardScaler
 scaler = StandardScaler()
 x_train[num_cols] = scaler.fit_transform(x_train[num_cols])
 x_test[num_cols] = scaler.transform(x_test[num_cols])
+```
 
 MODEL DEVELOPMENT AND EVALAUTION
 Logistic Regression (Baseline Model)
